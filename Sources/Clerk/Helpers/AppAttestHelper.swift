@@ -55,7 +55,7 @@ struct AppAttestHelper {
         let attestation = try await DCAppAttestService.shared.attestKey(keyId, clientDataHash: clientDataHash)
         try await verify(keyId: keyId, challenge: challenge, attestation: attestation)
         
-        try SimpleKeychain().set(keyId, forKey: keychainKey)
+        try SimpleKeychain(service: Clerk.shared.keychainService, accessGroup: Clerk.shared.keychainAccessGroup).set(keyId, forKey: keychainKey)
         return keyId
     }
     
@@ -121,7 +121,7 @@ struct AppAttestHelper {
     /// Checks whether a key ID is stored in the keychain.
     static var hasKeyId: Bool {
         do {
-            return try SimpleKeychain().hasItem(forKey: keychainKey)
+            return try SimpleKeychain(service: Clerk.shared.keychainService, accessGroup: Clerk.shared.keychainAccessGroup).hasItem(forKey: keychainKey)
         } catch {
             return false
         }
@@ -129,13 +129,13 @@ struct AppAttestHelper {
     
     /// Retrieves the stored attestation key ID from the keychain.
     private static var keyId: String? {
-        try? SimpleKeychain().string(forKey: keychainKey)
+        try? SimpleKeychain(service: Clerk.shared.keychainService, accessGroup: Clerk.shared.keychainAccessGroup).string(forKey: keychainKey)
     }
     
     /// Removes the stored attestation key ID from the keychain.
     /// - Throws: An error if key deletion fails.
     static func removeKeyId() throws {
-        try SimpleKeychain().deleteItem(forKey: keychainKey)
+        try SimpleKeychain(service: Clerk.shared.keychainService, accessGroup: Clerk.shared.keychainAccessGroup).deleteItem(forKey: keychainKey)
     }
     
     /// Retrieves the stored attestation client ID from the keychain.
@@ -144,7 +144,7 @@ struct AppAttestHelper {
     /// the app wont have a client yet
     static var clientId: String {
         get throws {
-            try SimpleKeychain().string(forKey: "clientId")
+            try SimpleKeychain(service: Clerk.shared.keychainService, accessGroup: Clerk.shared.keychainAccessGroup).string(forKey: "clientId")
         }
     }
 }

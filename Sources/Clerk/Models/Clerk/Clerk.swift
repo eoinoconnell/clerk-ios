@@ -105,6 +105,13 @@ final public class Clerk {
   /// Enable for additional debugging signals.
   private(set) public var debugMode: Bool = false
   
+  /// Keychain service name
+  nonisolated(unsafe) private(set) public var keychainService: String = Bundle.main.bundleIdentifier!
+
+  /// Keychain access group for sharing auth with extensions
+  nonisolated(unsafe) private(set) public var keychainAccessGroup: String? = nil
+    
+    
   /// The Clerk environment for the instance.
   var environment = Environment()
   
@@ -128,7 +135,8 @@ extension Clerk {
   /// - Parameters:
   ///     - publishableKey: The publishable key from your Clerk Dashboard, used to connect to Clerk.
   ///     - debugMode: Enable for additional debugging signals.
-  public func configure(publishableKey: String, debugMode: Bool = false) {
+  public func configure(publishableKey: String, debugMode: Bool = false, keychainService: String? = nil,
+                        keychainAccessGroup: String? = nil) {
     if publishableKey.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
       dump("""
         Clerk configured without a publishable key. 
@@ -139,6 +147,10 @@ extension Clerk {
     
     self.publishableKey = publishableKey
     self.debugMode = debugMode
+    if let service = keychainService {
+        self.keychainService = service
+    }
+    self.keychainAccessGroup = keychainAccessGroup
   }
   
   /// Loads all necessary environment configuration and instance settings from the Frontend API.
